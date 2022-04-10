@@ -85,9 +85,23 @@ object Main {
   }
    */
   def computeTokens(words: List[String]): List[Token] = {
-    Nil
-    //def tailGetTokens()
+    // create token if not exists.
+    // if already exists, return incremented token
+    def getToken(word: String, tokenList: List[Token]): Token = tokenList match {
+      case Token(s, freq) :: xs =>
+        if (s.equals(word)) Token(word, freq + 1)
+        else getToken(word, xs)
+      case Nil => Token(word, 1)
+    }
+
+    def aux(words: List[String], acc: List[Token]): List[Token] = words match {
+      case word :: xs => aux(xs, acc :+ getToken(word, acc))
+      case Nil => acc
+    }
+
+    aux(words, Nil)
   }
+    //def tailGetTokens()
 
   def tokensToTree(tokens: List[Token]): WTree = ???
 
