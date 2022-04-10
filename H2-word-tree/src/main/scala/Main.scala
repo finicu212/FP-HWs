@@ -72,18 +72,6 @@ object Main {
     else l
   }
 
-  /*
-  /* compute the frequency of each chunk */
-  def computeTokens(words: List[String]): List[Token] = {
-    /* insert a new string in a list of tokens */
-    def insWord(s: String, acc: List[Token]): List[Token] = ???
-
-    /* tail-recursive implementation of the list of tokens */
-    def aux(rest: List[String], acc: List[Token]): List[Token] = ???
-
-    ???
-  }
-   */
   def computeTokens(words: List[String]): List[Token] = {
     def insWord(s: String, acc: List[Token]): List[Token] = acc match {
         case x :: xs =>
@@ -92,13 +80,14 @@ object Main {
         case Nil => Token(s, 1) :: Nil // reach end so we found a new word
       }
 
-    @tailrec
-    def aux(rest: List[String], acc: List[Token]): List[Token] = rest match {
-      case word :: xs => aux(xs, insWord(word, acc))
-      case Nil => acc
-    }
+    // i replaced this aux func with a foldLeft call
+//    @tailrec
+//    def aux(rest: List[String], acc: List[Token]): List[Token] = rest match {
+//      case word :: xs => aux(xs, insWord(word, acc))
+//      case Nil => acc
+//    }
 
-    aux(words, Nil)
+    words.foldLeft(List[Token]())((acc, s) => insWord(s, acc))
   }
 
   def tokensToTree(tokens: List[Token]): WTree = ???
