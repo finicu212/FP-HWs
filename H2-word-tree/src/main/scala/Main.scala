@@ -85,23 +85,21 @@ object Main {
   }
    */
   def computeTokens(words: List[String]): List[Token] = {
-    // create token if not exists.
-    // if already exists, return incremented token
-    def getToken(word: String, tokenList: List[Token]): Token = tokenList match {
-      case Token(s, freq) :: xs =>
-        if (s.equals(word)) Token(word, freq + 1)
-        else getToken(word, xs)
-      case Nil => Token(word, 1)
-    }
+    def insWord(s: String, acc: List[Token]): List[Token] = acc match {
+        case x :: xs =>
+          if (x.word.equals(s)) Token(s, x.freq + 1) :: xs // s exists, increment freq
+          else x :: insWord(s, xs) // check for s in xs
+        case Nil => Token(s, 1) :: Nil // reach end so we found a new word
+      }
 
-    def aux(words: List[String], acc: List[Token]): List[Token] = words match {
-      case word :: xs => aux(xs, acc :+ getToken(word, acc))
+    @tailrec
+    def aux(rest: List[String], acc: List[Token]): List[Token] = rest match {
+      case word :: xs => aux(xs, insWord(word, acc))
       case Nil => acc
     }
 
     aux(words, Nil)
   }
-    //def tailGetTokens()
 
   def tokensToTree(tokens: List[Token]): WTree = ???
 
