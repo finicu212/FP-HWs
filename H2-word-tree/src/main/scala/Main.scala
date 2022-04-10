@@ -1,7 +1,7 @@
 import scala.annotation.tailrec
 
 abstract class WTree extends WTreeInterface {
-  override def filter(pred: Token => Boolean): WTree = this.filterAux(pred, Empty)
+  def filter(pred: Token => Boolean): WTree = this.filterAux(pred, Empty)
   def filterAux(pred: Token => Boolean, acc: WTree): WTree
 }
 
@@ -28,8 +28,8 @@ case class Node(word: Token, left: WTree, right: WTree) extends WTree {
   override def size: Int = 1 + left.size + right.size
 
   override def filterAux(pred: Token => Boolean, acc: WTree): WTree = {
-    val aux_acc = if (pred(word)) acc.ins(word) else acc
-    left.filterAux(pred, right.filterAux(pred, aux_acc))
+    if (pred(word)) acc.ins(word)
+    else right.filterAux(pred, left.filterAux(pred, acc))
   }
 }
 
@@ -37,12 +37,6 @@ case class Node(word: Token, left: WTree, right: WTree) extends WTree {
 object Main {
 
   def profileID: Int = 754830
-
-  val tree: WTree = Node(Token("Hello", 2), Empty, Empty)
-  val newTree: WTree = tree.ins(Token("World", 3)).ins(Token("There", 1))
-
-  println(newTree.toString)
-  println(newTree.filter(x => {x.freq % 2 == 1}))
 
   val scalaDescription: String = "Scala is a strong statically typed general-purpose programming language which supports both object-oriented programming and functional programming designed to be concise many of Scala s design decisions are aimed to address criticisms of Java Scala source code can be compiled to Java bytecode and run on a Java virtual machine. Scala provides language interoperability with Java so that libraries written in either language may be referenced directly in Scala or Java code like Java, Scala is object-oriented, and uses a syntax termed curly-brace which is similar to the language C since Scala 3 there is also an option to use the off-side rule to structure blocks and its use is advised martin odersky has said that this turned out to be the most productive change introduced in Scala 3 unlike Java, Scala has many features of functional programming languages like Scheme, Standard ML, and Haskell, including currying, immutability, lazy evaluation, and pattern matching it also has an advanced type system supporting algebraic data types, covariance and contravariance, higher-order types (but not higher-rank types), and anonymous types other features of Scala not present in Java include operator overloading optional parameters named parameters and raw strings conversely a feature of Java not in Scala is checked exceptions which has proved controversial"
 
@@ -66,7 +60,7 @@ object Main {
       case Nil => Nil
     }
 
-    // if we have only void chunks, we return the empty list
+    /* if we have only void chunks, we return the empty list */
     val l = trim(aux(text))
     if (l == List(Nil)) Nil
     else l
@@ -80,17 +74,17 @@ object Main {
         case Nil => Token(s, 1) :: Nil // reach end so we found a new word
       }
 
-    // i replaced this aux func with a foldLeft call
+    words.foldLeft(List[Token]())((acc, s) => insWord(s, acc))
+
+      /** replaced by foldLeft call above */
 //    @tailrec
 //    def aux(rest: List[String], acc: List[Token]): List[Token] = rest match {
 //      case word :: xs => aux(xs, insWord(word, acc))
 //      case Nil => acc
 //    }
-
-    words.foldLeft(List[Token]())((acc, s) => insWord(s, acc))
   }
 
-  def tokensToTree(tokens: List[Token]): WTree = ???
+  def tokensToTree(tokens: List[Token]): WTree = tokens.foldLeft[WTree](Empty)((acc, tok) => acc.ins(tok))
 
   /* Using the previous function, which builds a tree from a list of tokens,
   *  write a function which takes a string,
@@ -100,8 +94,13 @@ object Main {
   *  A much cleaner implementation can be achieved by "sequencing" functions using
   *  andThen.
   * */
+  def makeTree(s:String): WTree = {
+    def stringify(list: List[List[Char]]): List[String] =
+      list.foldRight(List[String]())((elem, acc) => acc :+ elem.mkString)
 
-  def makeTree(s:String): WTree = ???
+    tokensToTree(computeTokens(stringify(split(s.toList))))
+    //tokensToTree(computeTokens(stringify(split(s.toList))))
+  }
 
   /* build a tree with the words and frequencies from the text in the scalaDescription text */
   def wordSet: WTree = ???
@@ -110,15 +109,13 @@ object Main {
   def scalaFreq: Int = ???
 
   /* find how many programming languages are referenced in the text.
-     A PL is a keyword which starts with an uppercase
-     You can reference a character from a string using (0) and you can
-     also use the function isUpper
-
-  */
+    *   A PL is a keyword which starts with an uppercase
+    *   You can reference a character from a string using (0) and you can
+    *   also use the function isUpper
+    */
   def progLang: Int = ???
 
   /* find how many words which are not prepositions or conjunctions appear in the text (any word whose size is larger than 3). */
-
   def wordCount : Int = ???
 
 
