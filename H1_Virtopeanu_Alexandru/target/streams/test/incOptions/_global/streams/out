@@ -1,0 +1,8 @@
+[debug] Created transactional ClassFileManager with tempDir = /Users/mateipopovici/Dropbox/asist/H1-fsets/target/scala-2.13/test-classes.bak
+[debug] About to delete class files:
+[debug] 	FSetTest.class
+[debug] We backup class files:
+[debug] 	FSetTest.class
+[debug] Registering generated classes:
+[debug] 	FSetTest.class
+[debug] Removing the temporary directory used for backing up class files: /Users/mateipopovici/Dropbox/asist/H1-fsets/target/scala-2.13/test-classes.bak
