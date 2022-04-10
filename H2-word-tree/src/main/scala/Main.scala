@@ -60,15 +60,14 @@ object Main {
         case x :: xs => aux(xs, prevList :+ x, acc)
       }
 
-    def trim(text: List[Char]): List[Char] = text match {
-      case Nil => Nil
-      case ' ' :: Nil => Nil
-      case ' ' :: ' ' :: xs => ' ' :: trim(xs)
+    def trim(list: List[List[Char]]): List[List[Char]] = list match {
+      case Nil :: xs => trim(xs)
       case x :: xs => x :: trim(xs)
+      case Nil => Nil
     }
 
     // if we have only void chunks, we return the empty list
-    val l = aux(trim(text))
+    val l = trim(aux(text))
     if (l == List(Nil)) Nil
     else l
   }
@@ -86,7 +85,8 @@ object Main {
   }
    */
   def computeTokens(words: List[String]): List[Token] = {
-    def tailGetTokens()
+    Nil
+    //def tailGetTokens()
   }
 
   def tokensToTree(tokens: List[Token]): WTree = ???
