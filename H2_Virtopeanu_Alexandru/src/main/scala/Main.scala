@@ -85,7 +85,7 @@ object Main {
   }
 
   def tokensToTree(tokens: List[Token]): WTree =
-    tokens.foldRight[WTree](Empty)((tok, acc) => acc.ins(tok))
+    tokens.foldLeft[WTree](Empty)((acc, tok) => acc.ins(tok))
 
   /* Using the previous function, which builds a tree from a list of tokens,
   *  write a function which takes a string,
@@ -97,10 +97,9 @@ object Main {
   * */
   def makeTree(s:String): WTree = {
     def stringify(list: List[List[Char]]): List[String] =
-      list.foldRight(List[String]())((elem, acc) => acc :+ elem.mkString)
+      list.foldLeft(List[String]())((acc, elem) => acc :+ elem.mkString)
 
     tokensToTree(computeTokens(stringify(split(s.toList))))
-    //tokensToTree(computeTokens(stringify(split(s.toList))))
   }
 
   /* build a tree with the words and frequencies from the text in the scalaDescription text */
