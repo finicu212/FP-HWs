@@ -3,14 +3,18 @@ import scala.annotation.tailrec
 abstract class WTree extends WTreeInterface {
   def filter(pred: Token => Boolean): WTree = this.filterAux(pred, Empty)
   def filterAux(pred: Token => Boolean, acc: WTree): WTree
+
+  def foldLeft[A](acc: A)(op: (Token, A) => A): A
 }
 
 case object Empty extends WTree {
   override def isEmpty = true
   override def ins(w: Token): WTree = Node(w, Empty, Empty)
-  override def filterAux(pred: Token => Boolean, acc: WTree): WTree = Empty
+  override def filterAux(pred: Token => Boolean, acc: WTree): WTree = acc
   override def size: Int = 0
   override def contains(s: String): Boolean = false
+
+  override def foldLeft[A](acc: A)(op: (Token, A) => A): A = acc
 }
 
 case class Node(word: Token, left: WTree, right: WTree) extends WTree {
@@ -27,9 +31,13 @@ case class Node(word: Token, left: WTree, right: WTree) extends WTree {
   }
   override def size: Int = 1 + left.size + right.size
 
-  override def filterAux(pred: Token => Boolean, acc: WTree): WTree = {
-    if (pred(word)) acc.ins(word)
-    else right.filterAux(pred, left.filterAux(pred, acc))
+  override def filterAux(pred: Token => Boolean, acc: WTree): WTree =
+    left.filterAux(pred, right.filterAux(pred, if (pred(this.word)) acc.ins(word) else acc))
+
+  override def foldLeft[A](acc: A)(op: (Token, A) => A): A = this match {
+    case Node(tok, Empty, Empty) => op(tok, acc)
+    case Node(tok, left, right) => left.foldLeft(right.foldLeft(op(tok, acc))(op))(op)
+    case _ => acc
   }
 }
 
@@ -103,20 +111,25 @@ object Main {
   }
 
   /* build a tree with the words and frequencies from the text in the scalaDescription text */
-  def wordSet: WTree = ???
+  def wordSet: WTree = makeTree(scalaDescription)
 
   /* find the number of occurrences of the keyword "Scala" in the scalaDescription text */
-  def scalaFreq: Int = ???
+  def scalaFreq: Int = wordSet.filter((tok: Token) => tok.word.equals("Scala")) match {
+    case Node(token, Empty, Empty) => token.freq
+    case Node(_, _, _) => -1 // multiple tokens with "Scala" make no sense
+    case Empty => 0 // "Scala" not found
+  }
 
   /* find how many programming languages are referenced in the text.
     *   A PL is a keyword which starts with an uppercase
     *   You can reference a character from a string using (0) and you can
     *   also use the function isUpper
     */
-  def progLang: Int = ???
+  def progLang: Int = wordSet.filter((tok: Token) => tok.word(0).isUpper).size
 
   /* find how many words which are not prepositions or conjunctions appear in the text (any word whose size is larger than 3). */
-  def wordCount : Int = ???
+  def wordCount : Int = wordSet.filter((tok: Token) => tok.word.length > 3)
+    .foldLeft(0)((tok, sum) => sum + tok.freq)
 
 
 }

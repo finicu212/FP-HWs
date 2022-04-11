@@ -66,7 +66,7 @@ class WTreeTest extends munit.FunSuite {
   }
 
   test("filter: Simple test 1 (5p)"){
-    assert(makeTree("ba ma ta ma ba ma").filter(_.word == "ma").contains("ma"))
+    assert(makeTree("ba ma ta ma ba ma").filter(_.word == "ma").contains("ma"), "got " + makeTree("ba ma ta ma ba ma").filter(_.word == "ma"))
   }
 
   test("filter: Simple test 2 (5p)"){
@@ -82,11 +82,11 @@ class WTreeTest extends munit.FunSuite {
   }
 
   test("How many programming languages (10p)"){
-    assert(progLang == 8)
+    assert(progLang == 8, "got " + progLang + " and expected 8")
   }
 
   test("How many words (5p)"){
-    assert(wordCount == 139)
+    assert(wordCount == 139, "got " + wordCount)
   }
 
 }
