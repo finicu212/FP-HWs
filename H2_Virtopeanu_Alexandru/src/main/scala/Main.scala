@@ -127,7 +127,5 @@ object Main {
   /* find how many words which are not prepositions or conjunctions appear in the text (any word whose size is larger than 3). */
   def wordCount : Int = wordSet.filter((tok: Token) => tok.word.length > 3)
     .foldLeft(0)((tok, sum) => sum + tok.freq)
-
-
 }
 
