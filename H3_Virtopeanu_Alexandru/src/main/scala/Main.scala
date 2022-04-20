@@ -52,7 +52,18 @@ object Main {
   }
 
   def show(b: Board): String = {
-    ???
+    def showLine(l: Line): String = l match {
+      case One :: xs => 'X' + showLine(xs)
+      case Two :: xs => '0' + showLine(xs)
+      case _ :: xs => '.' + showLine(xs)
+      case Nil => ""
+    }
+    b match {
+      case x :: xs =>
+        if (xs.nonEmpty) showLine(x) + "\n" + show(xs)
+        else showLine(x)
+      case _ => ""
+    }
   }
 
   // Returns a list of columns from a board
