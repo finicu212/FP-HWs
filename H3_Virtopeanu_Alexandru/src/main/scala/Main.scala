@@ -16,7 +16,9 @@ object Main {
       }
 
     def aux(text: List[Char]): Board = text match {
-      case _ :: '\n' :: xs => Nil :: aux(xs)
+      case '\r' :: '\n' :: xs => Nil :: aux(xs) // I spent about 6 hours debugging until I figured out it had CRLF breaks...
+      case '\r' :: xs => Nil :: aux(xs)
+      case '\n' :: xs => Nil :: aux(xs)
       case x :: xs => aux(xs) match {
         case y :: ys => (toPos(x) :: y) :: ys
         case Nil => List(List[Player](toPos(x)))
@@ -69,9 +71,19 @@ object Main {
   }
 
   // Returns a list of columns from a board
-  def getColumns(b:Board): Board = ???
+  def getColumns(b:Board): Board = b
 
   //returns the first diagonal as a line
+  /**
+   * Append top left char to getFstDiag(minor) until minor is empty
+   *
+   * My algorithm of getting the "minor" of the board:
+   * 1. Get rid of first line
+   * 2. Transpose what's left
+   * 3. Get rid of first line of that
+   * 4. Transpose what's left
+   * 5. Result should be the minor
+   * */
   def getFstDiag(b:Board): Line = ???
 
   //returns the second diagonal as a line
