@@ -2,43 +2,43 @@ import Main._
 
 class GameTests extends munit.FunSuite {
 
-    val small =
-      """0.X
-        |0X.
-        |X..""".stripMargin
+  val small =
+    """0.X
+      |0X.
+      |X..""".stripMargin
 
-    val medium1 =
-      """00000
-        |0000X
-        |000..
-        |00.0.
-        |0X..0""".stripMargin
+  val medium1 =
+    """00000
+      |0000X
+      |000..
+      |00.0.
+      |0X..0""".stripMargin
 
-    val aboveFstDiag1 =
-      """00..
-        |00.
-        |0X
-        |0""".stripMargin
+  val aboveFstDiag1 =
+    """00..
+      |00.
+      |0X
+      |0""".stripMargin
 
-    val aboveSndDiag1 =
-      """0000
-        |000
-        |00
-        |0""".stripMargin
+  val aboveSndDiag1 =
+    """0000
+      |000
+      |00
+      |0""".stripMargin
 
-    val belowSndDiag1 =
-      """X..X
-        |.0.
-        |..
-        |0""".stripMargin
+  val belowSndDiag1 =
+    """X..X
+      |.0.
+      |..
+      |0""".stripMargin
 
-    val medium2 =
-      """0X0X0.
-        |000.X0
-        |0.0X..
-        |0..0..
-        |0X..0X
-        |...X..""".stripMargin
+  val medium2 =
+    """0X0X0.
+      |000.X0
+      |0.0X..
+      |0..0..
+      |0X..0X
+      |...X..""".stripMargin
 
   val aboveFstDiag2 =
     """X0X.X
@@ -69,52 +69,52 @@ class GameTests extends munit.FunSuite {
       |.""".stripMargin
 
   test("Valid profile id:"+profileID){
-         assert(profileID > 0)
-     }
+    assert(profileID > 0)
+  }
 
-     test("isFree implementation (0p) "){
-       assert(isFree(2,2,makeBoard(small)))
-       assert(!isFree(0,0,makeBoard(small)))
-     }
+  test("isFree implementation (0p) "){
+    assert(isFree(2,2,makeBoard(small)))
+    assert(!isFree(0,0,makeBoard(small)))
+  }
 
-    test("Complement implementation (0p)"){
-      assert(complement(One) == Two)
-      assert(complement(Two) == One)
-      assert(complement(Empty) == Empty)
-    }
+  test("Complement implementation (0p)"){
+    assert(complement(One) == Two)
+    assert(complement(Two) == One)
+    assert(complement(Empty) == Empty)
+  }
 
-    test("Showing a small board (5p)"){
+  test("Showing a small board (5p)"){
 
-        assert(small == show(makeBoard(small)))
-      }
+    assert(small == show(makeBoard(small)))
+  }
 
-    test("Showing a medium board (15p)"){
-      assert(medium1 == show(makeBoard(medium1)))
-    }
+  test("Showing a medium board (15p)"){
+    assert(medium1 == show(makeBoard(medium1)))
+  }
 
-    test("Retrieving the list of columns (0p)"){
-      assert(getColumns(makeBoard(medium1)) == makeBoard(medium1))
-    }
+  test("Retrieving the list of columns (0p)"){
+    assert(getColumns(makeBoard(medium1)) == makeBoard(medium1))
+  }
 
-    test("Retrieving the first diagonal (2p)"){
-      assert(getFstDiag(makeBoard(medium1)) == List(Two,Two,Two,Two,Two))
-    }
+  test("Retrieving the first diagonal (2p)"){
+    assert(getFstDiag(makeBoard(medium1)) == List(Two,Two,Two,Two,Two))
+  }
 
-    test("Retrieving the second diagonal (2p)"){
-      assert(getSndDiag(makeBoard(medium1)) == List(Two,Two,Two,Two,Two))
-    }
+  test("Retrieving the second diagonal (2p)"){
+    assert(getSndDiag(makeBoard(medium1)) == List(Two,Two,Two,Two,Two))
+  }
 
-    test("(A)Elements above fst diagonal 1 (2p)"){
-      assert(show(getAboveFstDiag(makeBoard(medium1))) == aboveFstDiag1)
-    }
+  test("(A)Elements above fst diagonal 1 (2p)"){
+    assert(show(getAboveFstDiag(makeBoard(medium1))) == aboveFstDiag1)
+  }
 
-    test("(A)Elements above fst diagonal 2 (2p)"){
-      //println(show(getAboveFstDiag(makeBoard(medium2))))
-      assert(show(getAboveFstDiag(makeBoard(medium2))) == aboveFstDiag2)
-    }
+  test("(A)Elements above fst diagonal 2 (2p)"){
+    //println(show(getAboveFstDiag(makeBoard(medium2))))
+    assert(show(getAboveFstDiag(makeBoard(medium2))) == aboveFstDiag2)
+  }
 
   test("(B)Elements below fst diagonal 1 (2p)"){
-        assert(show(getBelowFstDiag(makeBoard(medium1))) == aboveFstDiag1)
+    assert(show(getBelowFstDiag(makeBoard(medium1))) == aboveFstDiag1)
   }
 
   test("(B)Elements below fst diagonal 2 (2p)"){
