@@ -104,7 +104,11 @@ object Main {
       case Nil => Nil
     }
 
-    b.head.head :: getFstDiag(getMinor(b))
+    b match {
+      case Nil => Nil
+      case line :: Nil => line.head :: Nil
+      case line :: _ => line.head :: getFstDiag(getMinor(b))
+    }
   }
 
   //returns the second diagonal as a line
