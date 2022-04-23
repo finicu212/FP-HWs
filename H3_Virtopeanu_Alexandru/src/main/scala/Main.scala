@@ -15,14 +15,16 @@ object Main {
         case _ => Empty
       }
 
-    @tailrec
-    def aux(words: String, accLine: Line = Nil, accBoard: Board = Nil): Board = words match {
-      case x if x.startsWith("\n") => aux(x.substring(1), Nil, accBoard :+ accLine)
-      case x if x.nonEmpty => aux(x.substring(1), accLine :+ toPos(x.charAt(0)), accBoard)
-      case _ => accBoard :+ accLine
+    def aux(text: List[Char]): Board = text match {
+      case _ :: '\n' :: xs => Nil :: aux(xs)
+      case x :: xs => aux(xs) match {
+        case y :: ys => (toPos(x) :: y) :: ys
+        case Nil => List(List[Player](toPos(x)))
+      }
+      case Nil => Nil
     }
 
-    aux(s)
+    aux(s.toList)
   }
 
   // checks if the position (x,y) board b is free
