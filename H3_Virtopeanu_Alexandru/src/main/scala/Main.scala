@@ -37,6 +37,7 @@ object Main {
       case head :: tail =>
         if (x > 0) isFreeLine(x - 1, tail)
         else head.equals(Empty)
+      case _ => false
     }
 
     b match {
@@ -45,6 +46,7 @@ object Main {
         if (y > 0) isFree(x, y - 1, otherLines)
         // navigate horizontally
         else isFreeLine(x, firstLine)
+      case _ => false
     }
   }
 
@@ -65,20 +67,21 @@ object Main {
     b match {
       case x :: Nil => showLine(x)
       case x :: xs  => showLine(x) + "\r\n" + show(xs)
+      case _ => ""
     }
   }
 
   // Returns a list of columns from a board
   def getColumns(b:Board): Board = {
-    def getFirstLine(b: Board, boardNextIter: Board = Nil, accCurrentLine: Line = Nil): Board = b match {
+    def aux(b: Board, boardNextIter: Board = Nil, accCurrentLine: Line = Nil): Board = b match {
       case line :: lines => line match {
-        case x :: xs => getFirstLine(lines, boardNextIter :+ xs, accCurrentLine :+ x)
+        case x :: xs => aux(lines, boardNextIter :+ xs, accCurrentLine :+ x)
         case Nil => Nil
       }
-      case Nil => accCurrentLine :: getFirstLine(boardNextIter, Nil, Nil)
+      case Nil => accCurrentLine :: aux(boardNextIter, Nil, Nil)
     }
 
-    getFirstLine(b)
+    aux(b)
   }
 
   //returns the first diagonal as a line
