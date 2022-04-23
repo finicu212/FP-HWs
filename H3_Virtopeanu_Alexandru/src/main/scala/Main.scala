@@ -99,7 +99,7 @@ object Main {
     def getMinor(b: Board): Board = b match {
       case _ :: xs => getColumns(xs) match {
         case _ :: ys => getColumns(ys)
-        case Nil => { println("getColumns(" + xs + ") got Nil..."); xs }
+        case Nil => xs
       }
       case Nil => Nil
     }
@@ -131,7 +131,21 @@ object Main {
    * Partial stub - you can remove it if you want to implement it another way
    */
 
-  def update(p: Player)(ln: Int, col: Int, b: Board) : Board = ???
+  def update(p: Player)(ln: Int, col: Int, b: Board) : Board = {
+    def updateLine(p: Player)(ln: Int, l: Line): Line = l match {
+      case x :: xs =>
+        if (ln == 0) p :: xs
+        else x :: updateLine(p)(ln - 1, l)
+      case _ => Nil
+    }
+
+    b match {
+      case l :: ls =>
+        if (col == 0) updateLine(p)(ln, l) :: ls
+        else l :: update(p)(ln, col - 1, ls)
+      case _ => Nil
+    }
+  }
 
 
   /*
