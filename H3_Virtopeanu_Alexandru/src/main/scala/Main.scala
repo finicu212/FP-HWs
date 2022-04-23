@@ -63,15 +63,24 @@ object Main {
       case Nil => ""
     }
     b match {
-      case x :: xs =>
-        if (xs.nonEmpty) showLine(x) + "\n" + show(xs)
-        else showLine(x)
-      case _ => ""
+      case x :: Nil => showLine(x)
+      case x :: xs  => showLine(x) + "\r\n" + show(xs)
     }
   }
 
   // Returns a list of columns from a board
-  def getColumns(b:Board): Board = b
+  def getColumns(b:Board): Board = {
+    def getFirstLine(b: Board, boardWithoutFirstColumn: Board): Line = b match {
+      case line :: lines => line match {
+        case x :: xs => x :: getFirstLine(lines, xs :: boardWithoutFirstColumn)
+        case Nil => Nil
+      }
+      case Nil => Nil
+    }
+
+    println(getFirstLine(b, Nil))
+    Nil
+  }
 
   //returns the first diagonal as a line
   /**
@@ -84,7 +93,17 @@ object Main {
    * 4. Transpose what's left
    * 5. Result should be the minor
    * */
-  def getFstDiag(b:Board): Line = ???
+  def getFstDiag(b:Board): Line = {
+    def getMinor(b: Board): Board = b match {
+      case _ :: xs => getColumns(xs) match {
+        case _ :: ys => getColumns(ys)
+        case Nil => { println("getColumns(" + xs + ") got Nil..."); xs }
+      }
+      case Nil => Nil
+    }
+
+    b.head.head :: getFstDiag(getMinor(b))
+  }
 
   //returns the second diagonal as a line
   def getSndDiag(b:Board): Line = ???
