@@ -131,19 +131,17 @@ object Main {
    * Partial stub - you can remove it if you want to implement it another way
    */
 
-  def update(p: Player)(ln: Int, col: Int, b: Board) : Board = {
-    def updateLine(p: Player)(ln: Int, l: Line): Line = l match {
-      case x :: xs =>
-        if (ln == 0) p :: xs
-        else x :: updateLine(p)(ln - 1, l)
+  def update(p: Player)(y: Int, x: Int, b: Board) : Board = {
+    def updateLine(p: Player)(x: Int, l: Line): Line = l match {
+      case e :: els =>
+        if (x > 0) e :: updateLine(p)(x - 1, els)
+        else p :: els
       case _ => Nil
     }
-
     b match {
       case l :: ls =>
-        if (col == 0) updateLine(p)(ln, l) :: ls
-        else l :: update(p)(ln, col - 1, ls)
-      case _ => Nil
+        if (y > 0) l :: update(p)(y - 1, x, ls)
+        else updateLine(p)(x, l) :: ls
     }
   }
 
