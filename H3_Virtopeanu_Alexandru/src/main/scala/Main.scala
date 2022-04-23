@@ -70,16 +70,15 @@ object Main {
 
   // Returns a list of columns from a board
   def getColumns(b:Board): Board = {
-    def getFirstLine(b: Board, boardWithoutFirstColumn: Board): Line = b match {
+    def getFirstLine(b: Board, boardNextIter: Board = Nil, accCurrentLine: Line = Nil): Board = b match {
       case line :: lines => line match {
-        case x :: xs => x :: getFirstLine(lines, xs :: boardWithoutFirstColumn)
+        case x :: xs => getFirstLine(lines, boardNextIter :+ xs, accCurrentLine :+ x)
         case Nil => Nil
       }
-      case Nil => Nil
+      case Nil => accCurrentLine :: getFirstLine(boardNextIter, Nil, Nil)
     }
 
-    println(getFirstLine(b, Nil))
-    Nil
+    getFirstLine(b)
   }
 
   //returns the first diagonal as a line
