@@ -6,6 +6,8 @@ object Main {
 
   def profileID:Int = 754830
 
+  def newline: String = "\r\n"
+
   // creates a board from a string
   def makeBoard(s: String): Board = {
     def toPos(c: Char): Player =
@@ -66,7 +68,7 @@ object Main {
     }
     b match {
       case x :: Nil => showLine(x)
-      case x :: xs  => showLine(x) + "\r\n" + show(xs)
+      case x :: xs  => showLine(x) + newline + show(xs)
       case _ => ""
     }
   }
@@ -75,12 +77,18 @@ object Main {
   def getColumns(b:Board): Board = {
     def aux(b: Board, boardNextIter: Board = Nil, accCurrentLine: Line = Nil): Board = b match {
       case line :: lines => line match {
-        case x :: xs => aux(lines, boardNextIter :+ xs, accCurrentLine :+ x)
-        case Nil => Nil
+        case x :: xs => {println("at " + x); aux(lines, boardNextIter :+ xs, accCurrentLine :+ x)}
+        case Nil => boardNextIter match {
+          // usual square board
+          case Nil => Nil
+          // additional chance to stay in aux for non-square boards (for above-diags funcs)
+          case _ => accCurrentLine :: aux(boardNextIter)
+        }
       }
-      case Nil => accCurrentLine :: aux(boardNextIter, Nil, Nil)
+      case Nil => accCurrentLine :: aux(boardNextIter)
     }
 
+    println("getColumns(" + b + ")")
     aux(b)
   }
 
@@ -115,7 +123,22 @@ object Main {
   def getSndDiag(b:Board): Line = getFstDiag(getColumns(b))
 
   // retrieves all the diagonals above the first line
-  def getAboveFstDiag(b: Board): List[Line] = ???
+  def getAboveFstDiag(b: Board): List[Line] = {
+    @tailrec
+    def navigate(curr: Board, x: Int = 0, y: Int = 0, acc: Board = Nil, accCurrentLine: Line = Nil): Board = {
+      curr match {
+        case Nil :: otherLines => navigate(otherLines, 0, y + 1, acc :+ accCurrentLine)
+        case line :: otherLines => line match {
+          case e :: els => {
+            if (x > y) navigate(els :: otherLines, x + 1, y, acc, accCurrentLine :+ e)
+            else navigate(els :: otherLines, x + 1, y, acc, accCurrentLine)
+          }
+        }
+        case Nil => acc
+      }
+    }
+    getColumns(navigate(b))
+  }
 
   def getBelowFstDiag(b: Board): List[Line] = ???
 
@@ -156,12 +179,13 @@ object Main {
    *
    * */
   def next(p: Player)(b: Board): List[Board] = {
+    @tailrec
     def navigate(p: Player)(curr: Board, acc: List[Board] = Nil, x: Int = 0, y: Int = 0): List[Main.Board] = {
       curr match {
         case Nil :: otherLines => navigate(p)(otherLines, acc, 0, y + 1)
         case line :: otherLines => line match {
           case _ :: els => {
-            if (isFree(x, y, b)) { println(x + ", " + y + " free, result: " + update(p)(y, x, b)); navigate(p)(els :: otherLines, update(p)(y, x, b) :: acc, x + 1, y);  }
+            if (isFree(x, y, b)) navigate(p)(els :: otherLines, update(p)(y, x, b) :: acc, x + 1, y);
             else navigate(p)(els :: otherLines, acc, x + 1, y)
           }
         }
