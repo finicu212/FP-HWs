@@ -112,7 +112,7 @@ object Main {
   }
 
   //returns the second diagonal as a line
-  def getSndDiag(b:Board): Line = ???
+  def getSndDiag(b:Board): Line = getFstDiag(getColumns(b))
 
   // retrieves all the diagonals above the first line
   def getAboveFstDiag(b: Board): List[Line] = ???
@@ -146,15 +146,30 @@ object Main {
       case l :: ls =>
         if (y > 0) l :: update(p)(y - 1, x, ls)
         else updateLine(p)(x, l) :: ls
+      case _ => Nil
     }
   }
 
 
   /*
-   * generates one possible next move for player p. Hint - use "isFree" and "update"
+   * generates all possible next moves for player p. Hint - use "isFree" and "update"
    *
    * */
-  def next(p: Player)(b: Board): List[Board] = ???
+  def next(p: Player)(b: Board): List[Board] = {
+    def navigate(p: Player)(curr: Board, acc: List[Board] = Nil, x: Int = 0, y: Int = 0): List[Main.Board] = {
+      curr match {
+        case Nil :: otherLines => navigate(p)(otherLines, acc, 0, y + 1)
+        case line :: otherLines => line match {
+          case _ :: els => {
+            if (isFree(x, y, b)) { println(x + ", " + y + " free, result: " + update(p)(y, x, b)); navigate(p)(els :: otherLines, update(p)(y, x, b) :: acc, x + 1, y);  }
+            else navigate(p)(els :: otherLines, acc, x + 1, y)
+          }
+        }
+        case Nil => acc
+      }
+    }
+    navigate(p)(b)
+  }
 
 
   // for testing purposes only.
