@@ -77,18 +77,16 @@ object Main {
   def getColumns(b:Board): Board = {
     def aux(b: Board, boardNextIter: Board = Nil, accCurrentLine: Line = Nil): Board = b match {
       case line :: lines => line match {
-        case x :: xs => {println("at " + x); aux(lines, boardNextIter :+ xs, accCurrentLine :+ x)}
-        case Nil => boardNextIter match {
+        case x :: xs => aux(lines, boardNextIter :+ xs, accCurrentLine :+ x)
+        case Nil =>
           // usual square board
-          case Nil => Nil
+          if (boardNextIter == Nil) {println("exiting"); Nil}
           // additional chance to stay in aux for non-square boards (for above-diags funcs)
-          case _ => accCurrentLine :: aux(boardNextIter)
-        }
+          else accCurrentLine :: aux(boardNextIter)
       }
       case Nil => accCurrentLine :: aux(boardNextIter)
     }
-
-    println("getColumns(" + b + ")")
+    println(b)
     aux(b)
   }
 
@@ -140,11 +138,28 @@ object Main {
     getColumns(navigate(b))
   }
 
-  def getBelowFstDiag(b: Board): List[Line] = ???
+  def getBelowFstDiag(b: Board): List[Line] = getAboveFstDiag(getColumns(b))
 
-  def getAboveSndDiag(b: Board): List[Line] = ???
+  def getAboveSndDiag(b: Board): List[Line] = getBelowSndDiag(getColumns(b))
 
-  def getBelowSndDiag(b: Board): List[Line] = ???
+  def getBelowSndDiag(b: Board): List[Line] = {
+    @tailrec
+    def navigate(curr: Board, x: Int = 0, y: Int = 0, acc: Board = Nil, accCurrentLine: Line = Nil): Board = {
+      curr match {
+        case Nil :: otherLines =>
+          if (accCurrentLine != Nil) navigate(otherLines, 0, y + 1, acc :+ accCurrentLine)
+          else navigate(otherLines, 0, y + 1, acc, Nil)
+        case line :: otherLines => line match {
+          case e :: els => {
+            if (x > b.head.length - y - 1) navigate(els :: otherLines, x + 1, y, acc, accCurrentLine :+ e)
+            else navigate(els :: otherLines, x + 1, y, acc, accCurrentLine)
+          }
+        }
+        case Nil => acc
+      }
+    }
+    getColumns(navigate(b))
+  }
 
   //write a function which checks if a given player is a winner
   //hints: patterns and exists
