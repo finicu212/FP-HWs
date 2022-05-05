@@ -142,7 +142,7 @@ object Main {
     def getCorrectSideMinor(b: Board): Board = mirrorXYAxis(getMinor(mirrorXYAxis(b)))
     def aux(b: Board): List[Line] = {
       if (b == Nil) Nil
-      else {println("got diag: " + getSndDiag(b) + " from: " + b); getSndDiag(b) :: aux(getCorrectSideMinor(b))}
+      else getSndDiag(b) :: aux(getCorrectSideMinor(b))
     }
     aux(getCorrectSideMinor(b))
   }
@@ -159,7 +159,29 @@ object Main {
   //write a function which checks if a given player is a winner
   //hints: patterns and exists
   def winner(p: Player)(b: Board): Boolean = {
-    ???
+    def winner_line(p: Player)(l: Line): Boolean = {
+      var consecutiveElems: Int = 0
+      for (elem <- l) {
+        if (consecutiveElems > 4) return true
+        else if (elem == p) consecutiveElems += 1
+        else consecutiveElems = 0
+      }
+      consecutiveElems > 4
+    }
+
+    if (winner_line(p)(getFstDiag(b)) ||
+      winner_line(p)(getSndDiag(b))) return true
+
+    for (line <- b) if (winner_line(p)(line)) return true
+    for (line <- getColumns(b)) if (winner_line(p)(line)) return true
+
+    for (line <- getAboveFstDiag(b)) if (winner_line(p)(line)) return true
+    for (line <- getBelowFstDiag(b)) if (winner_line(p)(line)) return true
+
+    for (line <- getAboveSndDiag(b)) if (winner_line(p)(line)) return true
+    for (line <- getBelowSndDiag(b)) if (winner_line(p)(line)) return true
+
+    false
   }
 
   /*
