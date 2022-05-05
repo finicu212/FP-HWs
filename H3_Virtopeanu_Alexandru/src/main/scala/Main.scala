@@ -80,36 +80,42 @@ object Main {
         case x :: xs => aux(lines, boardNextIter :+ xs, accCurrentLine :+ x)
         case Nil =>
           // usual square board
-          if (boardNextIter == Nil) {println("exiting"); Nil}
+          if (boardNextIter == Nil) Nil
           // additional chance to stay in aux for non-square boards (for above-diags funcs)
           else accCurrentLine :: aux(boardNextIter)
       }
       case Nil => accCurrentLine :: aux(boardNextIter)
     }
-    println(b)
     aux(b)
+  }
+
+  def mirrorXAxis(b: Board): Board = for (line <- b) yield line.reverse
+  def mirrorYAxis(b: Board): Board = b.reverse
+  def mirrorXYAxis(b: Board): Board = mirrorYAxis(mirrorXAxis(b))
+
+  /** algo of getting the "minor" of the board:
+    * 1. Get rid of first line
+    * 2. Transpose what's left
+    * 3. Get rid of first line of that
+    * 4. Transpose what's left
+    * 5. Result should be the minor
+    * */
+  def getMinor(b: Board): Board = b match {
+    case _ :: Nil => Nil
+    case _ :: xs => getColumns(xs) match {
+      case _ :: ys =>
+        if (ys == Nil) Nil
+        else getColumns(ys)
+      case Nil => xs
+    }
+    case Nil => Nil
   }
 
   //returns the first diagonal as a line
   /**
    * Append top left char to getFstDiag(minor) until minor is empty
-   *
-   * My algorithm of getting the "minor" of the board:
-   * 1. Get rid of first line
-   * 2. Transpose what's left
-   * 3. Get rid of first line of that
-   * 4. Transpose what's left
-   * 5. Result should be the minor
-   * */
+   */
   def getFstDiag(b:Board): Line = {
-    def getMinor(b: Board): Board = b match {
-      case _ :: xs => getColumns(xs) match {
-        case _ :: ys => getColumns(ys)
-        case Nil => xs
-      }
-      case Nil => Nil
-    }
-
     b match {
       case Nil => Nil
       case line :: Nil => line.head :: Nil
@@ -118,47 +124,36 @@ object Main {
   }
 
   //returns the second diagonal as a line
-  def getSndDiag(b:Board): Line = getFstDiag(getColumns(b))
+  def getSndDiag(b:Board): Line = getFstDiag(mirrorXAxis(b))
 
   // retrieves all the diagonals above the first line
-  def getAboveFstDiag(b: Board): List[Line] = {
-    @tailrec
-    def navigate(curr: Board, x: Int = 0, y: Int = 0, acc: Board = Nil, accCurrentLine: Line = Nil): Board = {
-      curr match {
-        case Nil :: otherLines => navigate(otherLines, 0, y + 1, acc :+ accCurrentLine)
-        case line :: otherLines => line match {
-          case e :: els => {
-            if (x > y) navigate(els :: otherLines, x + 1, y, acc, accCurrentLine :+ e)
-            else navigate(els :: otherLines, x + 1, y, acc, accCurrentLine)
-          }
-        }
-        case Nil => acc
-      }
+  def getAboveFstDiag(b: Board): List[Line] = getBelowFstDiag(getColumns(b))
+
+  def getBelowFstDiag(b: Board): List[Line] = {
+    def getCorrectSideMinor(b: Board): Board = mirrorXAxis(getMinor(mirrorXAxis(b)))
+    def aux(b: Board): List[Line] = {
+      if (b == Nil) Nil
+      else getFstDiag(b) :: aux(getCorrectSideMinor(b))
     }
-    getColumns(navigate(b))
+    aux(getCorrectSideMinor(b))
   }
 
-  def getBelowFstDiag(b: Board): List[Line] = getAboveFstDiag(getColumns(b))
-
-  def getAboveSndDiag(b: Board): List[Line] = getBelowSndDiag(getColumns(b))
+  def getAboveSndDiag(b: Board): List[Line] = {
+    def getCorrectSideMinor(b: Board): Board = mirrorXYAxis(getMinor(mirrorXYAxis(b)))
+    def aux(b: Board): List[Line] = {
+      if (b == Nil) Nil
+      else {println("got diag: " + getSndDiag(b) + " from: " + b); getSndDiag(b) :: aux(getCorrectSideMinor(b))}
+    }
+    aux(getCorrectSideMinor(b))
+  }
 
   def getBelowSndDiag(b: Board): List[Line] = {
-    @tailrec
-    def navigate(curr: Board, x: Int = 0, y: Int = 0, acc: Board = Nil, accCurrentLine: Line = Nil): Board = {
-      curr match {
-        case Nil :: otherLines =>
-          if (accCurrentLine != Nil) navigate(otherLines, 0, y + 1, acc :+ accCurrentLine)
-          else navigate(otherLines, 0, y + 1, acc, Nil)
-        case line :: otherLines => line match {
-          case e :: els => {
-            if (x > b.head.length - y - 1) navigate(els :: otherLines, x + 1, y, acc, accCurrentLine :+ e)
-            else navigate(els :: otherLines, x + 1, y, acc, accCurrentLine)
-          }
-        }
-        case Nil => acc
-      }
+    def getCorrectSideMinor(b: Board): Board = getMinor(b)
+    def aux(b: Board): List[Line] = {
+      if (b == Nil) Nil
+      else getSndDiag(b) :: aux(getCorrectSideMinor(b))
     }
-    getColumns(navigate(b))
+    aux(getCorrectSideMinor(b))
   }
 
   //write a function which checks if a given player is a winner

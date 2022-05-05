@@ -121,23 +121,25 @@ class GameTests extends munit.FunSuite {
     assert(show(getBelowFstDiag(makeBoard(medium2))) == belowFstDiag2)
   }
 
-  test("(C)Elements above snd diagonal 1 (2p)"){
-    //print(show(getAboveSndDiag(makeBoard(medium1))))
-    assert(show(getAboveSndDiag(makeBoard(medium1))) == aboveSndDiag1)
-  }
-
-  test("(C)Elements above snd diagonal 2 (2p)"){
-    assert(show(getAboveSndDiag(makeBoard(medium2))) == aboveSndDiag2)
-  }
-
   test("(D)Elements below snd diagonal 1 (2p)"){
     //println(show(getBelowSndDiag(makeBoard(medium1))))
-    assert(show(getBelowSndDiag(makeBoard(medium1))) == belowSndDiag1)
+    assertEquals(show(getBelowSndDiag(makeBoard(medium1))), belowSndDiag1)
   }
 
   test("(D)Elements below snd diagonal 2 (2p)"){
-    assert(show(getBelowSndDiag(makeBoard(medium2))) == belowSndDiag2)
+    assertEquals(show(getBelowSndDiag(makeBoard(medium2))), belowSndDiag2)
   }
+
+
+  test("(C)Elements above snd diagonal 1 (2p)"){
+//    print(getAboveSndDiag(makeBoard(medium1)))
+    assertEquals(show(getAboveSndDiag(makeBoard(medium1))), aboveSndDiag1)
+  }
+
+  test("(C)Elements above snd diagonal 2 (2p)"){
+    assertEquals(show(getAboveSndDiag(makeBoard(medium2))), aboveSndDiag2)
+  }
+
 
 
   test("Winner 1 (5p)"){
@@ -183,8 +185,8 @@ class GameTests extends munit.FunSuite {
       |0.X
       |.X.""".stripMargin
 
-  val nextTestR1 = Set("00.\n0.X\n.X.","0.0\n0.X\n.X.", "0..\n00X\n.X.", "0..\n0.X\n0X.", "0..\n0.X\n.X0")
-  val nextTestR2 = Set("0X.\n0.X\n.X.","0.X\n0.X\n.X.", "0..\n0XX\n.X.", "0..\n0.X\nXX.", "0..\n0.X\n.XX")
+  val nextTestR1 = Set("00.\r\n0.X\r\n.X.","0.0\r\n0.X\r\n.X.", "0..\r\n00X\r\n.X.", "0..\r\n0.X\r\n0X.", "0..\r\n0.X\r\n.X0")
+  val nextTestR2 = Set("0X.\r\n0.X\r\n.X.","0.X\r\n0.X\r\n.X.", "0..\r\n0XX\r\n.X.", "0..\r\n0.X\r\nXX.", "0..\r\n0.X\r\n.XX")
 
   test("Next 2 (10p)"){
     println(next(Two)(makeBoard(nextTest)))
