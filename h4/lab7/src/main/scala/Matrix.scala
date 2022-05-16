@@ -46,9 +46,15 @@ object Matrix {
       yield for (elem <- line)
         yield x + elem
 
-  def hglue(img1: Img, img2: Img): Any =
-    for (line1 <- img1; line2 <- img2)
-      yield line1 +: line2
+  def hglue(img1: Img, img2: Img): List[Any] = {
+    var acc = List[List[Int]]()
+    for (line <- img1) {
+      for (i <- line.indices) {
+        acc :+ line(i)
+      }
+    }
+    acc
+  }
 
 
   def main(args: Array[String]): Unit = {
@@ -68,10 +74,16 @@ object Matrix {
     *     0 1 1 1 0     cropping from 1,1  to  3,2  yields:   1 1 1
     *     1 0 0 0 1
     *     1 0 0 0 1
+    */
 
-   */
     println(show(cropAt(img, 1, 1, 3, 2)))
     println(largerPos(m, 2))
+
+    /*
+    *     1 2 3           1 2 3     1 2 3 1 2 3
+    *     4 5 6   hglue   4 5 6  =  4 5 6 4 5 6
+    *     7 8 9           7 8 9     7 8 9 7 8 9
+    */
     println(hglue(m, m))
 
   }

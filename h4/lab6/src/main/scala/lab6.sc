@@ -1,3 +1,6 @@
+import scala.annotation.tailrec
+import scala.util.Random
+
 trait FList[A]{ // list with elements of type A
   def length: Int
   def head: A
@@ -20,6 +23,8 @@ trait FList[A]{ // list with elements of type A
   // Cons(1,(Cons(2,Cons(3,FNil()))).zip(Cons(true,Cons(false,Cons(true,FNil())))) =
   // Cons((1,true),Cons((2,false),Cons((3,true),FNil())))
   def zip[B](l: FList[B]): FList[(A,B)]
+  def insSorted(f: A => Int)(e: A): FList[A]
+  def sortBy(f: A => Int): FList[A]
 }
 
 /*
@@ -43,6 +48,9 @@ case class FNil[A]() extends FList[A]{
   override def last: A = throw new Exception("last on empty list")
   override def filter(p: A => Boolean): FList[A] = FNil[A]()
   override def zip[B](l: FList[B]): FList[(A,B)] = FNil[(A, B)]()
+  override def insSorted(f: A => Int)(e: A): FList[A] = Cons(e, FNil())
+  override def sortBy(f: A => Int): FList[A] = FNil[A]()
+
 }
 
 case class Cons[A](x:A, xs:FList[A]) extends FList[A]{
@@ -79,17 +87,39 @@ case class Cons[A](x:A, xs:FList[A]) extends FList[A]{
     if (p(x)) Cons(x, xs.filter(p))
     else xs.filter(p)
 
-  override def zip[B](l: FList[B]) = {
+  // Cons(1,(Cons(2,Cons(3,FNil()))).zip(Cons(true,Cons(false,Cons(true,FNil())))) =
+  // Cons((1,true),Cons((2,false),Cons((3,true),FNil())))
+  override def zip[B](l: FList[B]): FList[(A, B)] = {
+    Cons((x, l.head), xs.zip(l.tail))
+  }
 
+  def insSorted(f: A => Int)(e: A): FList[A] = {
+    if (f(head) > f(e)) Cons(e, Cons(head, FNil())).append(tail)
+    else Cons(head, tail.insSorted(f)(e))
+  }
 
+  def sortBy(f: A => Int): FList[A] = {
+    def aux(sorted: FList[A], unsorted: FList[A]): FList[A] = {
+      if (unsorted.length > 0) aux(sorted.insSorted(f)(unsorted.head), unsorted.tail)
+      else sorted
+    }
+    aux(Cons(head, FNil()), tail)
   }
 }
 
-val myList = Cons(1, Cons(2, Cons(3, Cons(4, FNil()))))
+val myList = Cons(1, Cons(2, Cons(4, Cons(5, Cons(6, FNil())))))
 
-myList.indexOf(3)
+myList.indexOf(4)
 myList.update(4, 1)
 myList.append(Cons(4, FNil()))
 myList.reverse
 myList.last
 myList.filter((x: Int) => x % 2 == 0)
+myList.zip(myList.reverse)
+
+
+myList.insSorted((e: Int) => e)(3)
+myList.reverse.sortBy((e: Int) => e)
+myList.sortBy((e: Int) => e)
+myList.sortBy((e: Int) => -e) // z -> a sort
+myList.sortBy((_: Int) => Random.nextInt(100)) // shuffle
