@@ -6,11 +6,9 @@ def atLeastk(k: Int, l: List[Int]): Boolean = {
   }
 }
 
-var l1 = List(7, 8, 9, 10, 11)
+var l1 = List(0, 1, 2, 3, 4)
 atLeastk(5, l1)
 atLeastk(6, l1)
-
-var retList = List()
 
 def take(n: Int, l: List[Int]): List[Int] = {
   if (n == 0) Nil
@@ -59,23 +57,72 @@ val gradebook = List(("G",3), ("F", 10), ("M",6), ("P",4))
 
 // Write a function which adds one point to all students which have a passing grade (>= 5), and leaves all other grades unchanged.
 def increment(g: Gradebook): Gradebook = {
-  def incrementGradeIfPassing(student: String, grade: Int): (String, Int) = {
-    if (grade >= 5) (student, grade + 1)
-    else (student, grade)
-  }
+//  def incrementGradeIfPassing(student: String, grade: Int): (String, Int) = {
+//    if (grade >= 5) (student, grade + 1)
+//    else (student, grade)
+//  }
 
   g.map(p =>
     if (p._2 >= 5) (p._1, p._2 + 1)
     else (p._1, p._2)
   )
 
-  g.map(p => incrementGradeIfPassing(p._1, p._2))
+//  g.map(p => incrementGradeIfPassing(p._1, p._2))
 }
 
+gradebook
 increment(gradebook)
-gradebook.tail
 
 def average(g: Gradebook): Double = {
-  0.0
-  //g.foldRight(g.tail)(((_, x), (_, y)) => x + y)
+  g.foldRight(0)((e: (String, Int), acc: Int) => e._2 + acc).toDouble / g.length
 }
+
+average(gradebook)
+
+def percentage(g: Gradebook): (Double,Double) = {
+  val num_pass_and_fail = g.foldRight((0, 0))((e: (String, Int), acc: (Int, Int)) =>
+    if (e._2 >= 5) (acc._1 + 1, acc._2)
+    else (acc._1, acc._2 + 1)
+  )
+
+  (num_pass_and_fail._1.toDouble / g.length, num_pass_and_fail._2.toDouble / g.length)
+}
+
+percentage(gradebook)
+
+def pass(g: Gradebook): List[String] = {
+  g.filter(
+    (item: (String,Int)) => item._2 >= 5
+  ).map(
+    (item: (String,Int)) => item._1
+  )
+}
+
+pass(gradebook)
+
+def mergeSort(l: Gradebook): Gradebook = {
+  def merge(u: Gradebook, v: Gradebook): Gradebook =
+    (u, v) match {
+      case (Nil, _) => v
+      case (_, Nil) => u
+      case (x :: xs, y :: ys) =>
+        if (x._2 < y._2) x :: merge(xs, v)
+        else y :: merge(u, ys)
+    }
+
+  l match {
+    case Nil => Nil
+    case x :: Nil => List(x)
+    case _ =>
+      val (left, right) = l.splitAt(l.length / 2)
+      merge(mergeSort(left), mergeSort(right))
+  }
+}
+
+val gradebookToSort = List(("Alex", 1), ("Frank", 10), ("Maria", 6), ("Paul", 4), ("TheBest", 11))
+
+mergeSort(gradebookToSort)
+
+def honorsList(g: Gradebook): List[String] = pass(mergeSort(g)).reverse
+
+honorsList(gradebookToSort)
