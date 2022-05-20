@@ -49,33 +49,21 @@ case class Polynomial (nonZeroTerms: Map[Int,Int]) {
     )
   )
 
-  override def toString: String = nonZeroTerms.foldLeft("")((acc, kv) =>
-    if (kv._1 > 0) acc + kv._2 + "*X^" + kv._1 + " + "
-    else acc + kv._2 + "*X^" + kv._1)
+  override def toString: String = nonZeroTerms.toList.sorted.reverse.foldLeft("")((acc, kv) =>
+      if (kv._1 > 0) acc + kv._2 + "*X^" + kv._1 + " + "
+      else acc + kv._2 + "*X^" + kv._1)
 
-//  def +(p2: Polynomial): Polynomial = {
-//    // acc should be instantiated with the polynomial we're adding with
-//    def update(acc: Map[Int, Int], pair: (Int, Int)): Map[Int, Int] =
-//      if (acc contains pair._1)
-//        acc + (pair._1 -> acc(pair._1))
-//      else acc + pair
-//
-//    Polynomial(p2.nonZeroTerms.foldLeft(nonZeroTerms)(update))
-//  }
 
-    def +(p2: Polynomial): Polynomial = {
-      // acc should be instantiated with the polynomial we're adding with
+  def +(p2: Polynomial): Polynomial = {
+      // initial acc should be the polynomial we're adding with
       def update(acc: Map[Int, Int], pair: (Int, Int)): Map[Int, Int] =
         acc + (pair._1 -> (acc.getOrElse(pair._1, 0) + pair._2))
-
 
       Polynomial(p2.nonZeroTerms.foldLeft(nonZeroTerms)(update))
     }
 
-  def hasRoot(r: Int): Boolean = {
-    val substitutedResult = nonZeroTerms.foldLeft(0)((acc, kv) => acc + kv._2 * pow(r, kv._1).toInt)
-    if (substitutedResult == 0) true else false
-  }
+  def hasRoot(r: Int): Boolean =
+    nonZeroTerms.foldLeft(0)((acc, kv) => acc + kv._2 * pow(r, kv._1).toInt) == 0
 }
 
 var polynomial = Polynomial(Map(2 -> 2, 0 -> 3)) // encodes 2*X^2 + 3
@@ -86,6 +74,11 @@ polynomial * 3
 var polynomial2 = Polynomial(Map(1 -> 3, 0 -> 3)) // encodes 3*X + 3
 
 polynomial2.hasRoot(-1)
+Polynomial(Map(2 -> 1)).hasRoot(0)
+Polynomial(Map(2 -> 1, 0 -> -1)).hasRoot(-1)
+Polynomial(Map(2 -> 1, 0 -> -1)).hasRoot(0)
+Polynomial(Map(2 -> 1, 0 -> -1)).hasRoot(1)
 
 // (2x^2 + 3) + (3x + 3) = 2x^2 + 3x + 6
-(polynomial + polynomial2).toString
+(polynomial + polynomial2).nonZeroTerms
+polynomial + polynomial2
