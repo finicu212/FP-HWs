@@ -1,4 +1,5 @@
 import scala.List
+import scala.annotation.tailrec
 
 trait Nat {}
 case object Zero extends Nat {}
@@ -7,6 +8,7 @@ case class Succ(n: Nat) extends Nat {}
 Succ(Succ(Succ(Zero)))
 
 def fromInt(i: Int): Nat = {
+  @tailrec
   def auxConvert(crt: Int, acc: Nat): Nat = {
     if (crt < i) auxConvert(crt + 1, Succ(acc))
     else acc
@@ -146,9 +148,24 @@ def depth(tree: ITree): Int = {
   }
 }
 
-depth(tree)
-depth(ins(ins(ins(tree)(4))(3))(4))
+val bigtree = ins(ins(ins(tree)(4))(3))(4)
 
+/*
+        5
+      /   \
+     2     7
+    / \     \
+   1   3     9
+        \
+         4
+        /
+       3
+ */
+
+depth(tree)
+depth(bigtree)
+
+@tailrec
 def minimum(tree: ITree): Int = {
   tree match {
     case Empty => -1
@@ -157,27 +174,12 @@ def minimum(tree: ITree): Int = {
   }
 }
 
-minimum(tree)
-
+@tailrec
 def maximum(tree: ITree): Int = {
   tree match {
     case Empty => -1
     case INode(v, Empty, Empty) => v
     case INode(_, _, right) => maximum(right)
-  }
-}
-
-maximum(tree)
-
-def successor(tree: ITree)(k: Int): Int = {
-  tree match {
-    case Empty => -1
-
-    case INode(k, _, right) => minimum(right)
-    case INode(v, left, right) => {
-      if (k > v) successor(right)(k)
-      else // TODO: ask radu
-      }
   }
 }
 
@@ -187,9 +189,34 @@ def successor(tree: ITree)(k: Int): Int = {
      2     7
     / \     \
    1  3      9
+
 */
 
-successor(tree)(2)
-successor(tree)(7)
-successor(tree)(1)
-successor(tree)(9)
+minimum(tree)
+maximum(tree)
+
+//def successor(tree: ITree)(k: Int): Int = {
+//  tree match {
+//    case Empty => -1
+//
+//    case INode(k, _, right) => minimum(right)
+//    case INode(v, left, right) => {
+//      if (k > v) successor(right)(k)
+//      else
+//      }
+//  }
+//}
+//
+///*
+//        5
+//      /   \
+//     2     7
+//    / \     \
+//   1  3      9
+//*/
+//
+//successor(tree)(2)
+//successor(tree)(7)
+//successor(tree)(1)
+//successor(tree)(9)
+
