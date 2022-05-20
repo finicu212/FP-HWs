@@ -32,10 +32,6 @@ def toInt(n: Nat): Int = {
 toInt(fromInt(3))
 
 def add(n: Nat, m: Nat): Nat = {
-  n match {
-    case Zero => m
-    case Succ(last) => Succ(add(last, m))
-  }
 
   m match {
     case Zero => n

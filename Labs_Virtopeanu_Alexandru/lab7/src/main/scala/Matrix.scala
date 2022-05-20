@@ -46,18 +46,24 @@ object Matrix {
       yield for (elem <- line)
         yield x + elem
 
-//  def hglue(img1: Img, img2: Img): Img = {
-//    (img1, img2) match {
-//      case (x :: xs, y :: ys) => (x ++ y) :: hglue(xs, ys)
-//      case (Nil, y :: ys) => y :: hglue(Nil, ys)
-//      case (x :: xs, Nil) => x :: hglue(xs, Nil)
-//      case (Nil, Nil) => Nil
-//    }
-//  }
+  def hglue(img1: Img, img2: Img): Img = {
+    (img1, img2) match {
+      case (x :: xs, y :: ys) => (x ++ y) :: hglue(xs, ys)
+      case (Nil, y :: ys) => y :: hglue(Nil, ys)
+      case (x :: xs, Nil) => x :: hglue(xs, Nil)
+      case (Nil, Nil) => Nil
+    }
+  }
 
-  def hglue(img1: Img, img2: Img): Img = rot90Left(vglue(rot90Right(img1), rot90Right(img2)))
+//  def hglue(img1: Img, img2: Img): Img = rot90Left(vglue(rot90Right(img1), rot90Right(img2)))
 
   def vglue(img1: Img, img2: Img): Img = img1 ++ img2
+
+//  def diag(img: Img): Img = {
+//    (for (i <- 0.until(img.indices))
+//      yield for (j <- 0.until(img.indices))
+//        yield img(i)(j)).toList
+//  }
 
   def main(args: Array[String]): Unit = {
     val m = List(List(1,2,3), List(4,5,6), List(7,8,9))
