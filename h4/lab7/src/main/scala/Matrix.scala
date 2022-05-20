@@ -46,16 +46,18 @@ object Matrix {
       yield for (elem <- line)
         yield x + elem
 
-  def hglue(img1: Img, img2: Img): List[Any] = {
-    var acc = List[List[Int]]()
-    for (line <- img1) {
-      for (i <- line.indices) {
-        acc :+ line(i)
-      }
-    }
-    acc
-  }
+//  def hglue(img1: Img, img2: Img): Img = {
+//    (img1, img2) match {
+//      case (x :: xs, y :: ys) => (x ++ y) :: hglue(xs, ys)
+//      case (Nil, y :: ys) => y :: hglue(Nil, ys)
+//      case (x :: xs, Nil) => x :: hglue(xs, Nil)
+//      case (Nil, Nil) => Nil
+//    }
+//  }
 
+  def hglue(img1: Img, img2: Img): Img = rot90Left(vglue(rot90Right(img1), rot90Right(img2)))
+
+  def vglue(img1: Img, img2: Img): Img = img1 ++ img2
 
   def main(args: Array[String]): Unit = {
     val m = List(List(1,2,3), List(4,5,6), List(7,8,9))
@@ -84,7 +86,8 @@ object Matrix {
     *     4 5 6   hglue   4 5 6  =  4 5 6 4 5 6
     *     7 8 9           7 8 9     7 8 9 7 8 9
     */
-    println(hglue(m, m))
+    println(show(hglue(m, m)))
+    println(show(vglue(m, m)))
 
   }
 }

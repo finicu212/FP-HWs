@@ -80,5 +80,11 @@ Polynomial(Map(2 -> 1, 0 -> -1)).hasRoot(0)
 Polynomial(Map(2 -> 1, 0 -> -1)).hasRoot(1)
 
 // (2x^2 + 3) + (3x + 3) = 2x^2 + 3x + 6
-(polynomial + polynomial2).nonZeroTerms
 polynomial + polynomial2
+
+val big1 = Polynomial(Map(3 -> 3, 2 -> 3, 1 -> 3, 0 -> 3))   //    3  3  3  3
+val big2 = Polynomial(Map(3 -> 4, 2 -> 4, 1 -> 4, 0 -> 4))   //    4  4  4  4
+val big3 = Polynomial(Map(3 -> -2, 2 -> -1, 1 -> 1, 0 -> 2)) //   -2 -1  1  2
+
+// (2x^2 + 3) + (3x + 3) = 2x^2 + 3x + 6
+big1 + big2 + big3
